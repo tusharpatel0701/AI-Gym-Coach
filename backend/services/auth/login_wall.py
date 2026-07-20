@@ -1,20 +1,5 @@
 import streamlit as st
-
-# Fake database
-FAKE_USERS = {
-    "tushar": {
-        "id": 1,
-        "username": "tushar"
-    },
-    "prince": {
-        "id": 2,
-        "username": "prince"
-    },
-    "john": {
-        "id": 3,
-        "username": "john"
-    }
-}
+from services.persistence.exercise_repository import get_or_create_user
 
 
 def render_login_wall():
@@ -26,10 +11,9 @@ def render_login_wall():
 
     with st.form("login_form", clear_on_submit=False):
         username = st.text_input(
-            "Name",
-            placeholder="tushar / prince / john"
+            "Name (unique)",
+            placeholder="unique name e.g. princekhunt"
         )
-
         submit_button = st.form_submit_button(
             "Start Session",
             width="stretch"
@@ -40,18 +24,16 @@ def render_login_wall():
             st.error("Name cannot be empty.")
             return False
 
-        username = username.lower().strip()
-
-        if username not in FAKE_USERS:
-            st.error("User not found.")
-            return False
-
-        user = FAKE_USERS[username]
+        user = get_or_create_user(username)
 
         st.session_state["user_id"] = user["id"]
         st.session_state["username"] = user["username"]
 
-        st.success("Login Successful!")
         st.rerun()
 
     return False
+
+
+def logout():
+    st.session_state.clear()
+    st.rerun()

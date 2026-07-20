@@ -1,11 +1,34 @@
 import streamlit as st
-from services.auth.login_wall import render_login_wall
+from services.auth.login_wall import render_login_wall, logout
 from services.state.session_defaults import initial_session_defaults
 from services.config.workout_config import EXERCISE_OPTIONS
-
+from services.ui.style_loader import load_css, inject_local_font, inject_webrtc_styles
+from services.persistence.exercise_repository import init_db
 
 def main():
+    load_css("static/style.css")
+    inject_local_font("static/AdobeClean.otf", "AdobeClean")
+    inject_webrtc_styles()
+
+    init_db()
+
     st.set_page_config(page_title="AI GYM Coach", page_icon="🏋️‍♂️", layout="centered", initial_sidebar_state="expanded")
+
+    st.markdown("""
+<style>
+button[kind="secondary"] {
+    background-color: #dc2626 !important;
+    color: white !important;
+    border: 1px solid #dc2626 !important;
+}
+
+button[kind="secondary"]:hover {
+    background-color: #b91c1c !important;
+    border-color: #b91c1c !important;
+    color: white !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
     if not render_login_wall():
         return
@@ -20,6 +43,14 @@ def main():
         if st.session_state.username:
             st.markdown(f"### Welcome, {st.session_state.username}!")
 
+
+        if st.button(
+            "Logout",
+            width="stretch",
+            key="logout_button"
+        ):
+            logout() 
+
         st.divider()
 
         st.subheader("Workout Plan")
@@ -30,7 +61,7 @@ def main():
             if "plan_sets" not in st.session_state:
                 st.session_state["plan_sets"] = 3
 
-            st.number_input("Sets", min_value=1, max_value=10, value=3, step=1, key="plan_sets")
+            st.number_input("Sets", min_value=1, max_value=10, step=1, key="plan_sets")
             st.number_input("Reps", min_value=1, max_value=50, value=10, step=1, key="plan_reps")
             start_workout_button = st.button("Start Workout", width="stretch", key="start_workout_button")
 
