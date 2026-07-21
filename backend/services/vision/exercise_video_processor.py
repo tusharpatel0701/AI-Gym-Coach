@@ -13,6 +13,7 @@ from detectors.biceps_curl import BicepsCurlDetector
 from detectors.shoulder_press import ShoulderPressDetector
 from detectors.lunges import LungesDetector
 from services.config.workout_config import POSE_CONNECTIONS
+from pathlib import Path
 
 
 class VideoProcessorClass(VideoProcessorBase):
@@ -21,8 +22,8 @@ class VideoProcessorClass(VideoProcessorBase):
         self._latest_metrics = None
         self._exercise_type = "Squats"
 
-        model_path = os.path.join(os.getcwd(), "ml_models", "pose_landmarker_full.task")
-        base_option = python.BaseOptions(model_asset_path=model_path)
+        model_path = Path(__file__).resolve().parents[2] / "ml_models" / "pose_landmarker_full.task"
+        base_option = python.BaseOptions(model_asset_path=str(model_path))
 
         options = vision.PoseLandmarkerOptions(
             base_options=base_option,
