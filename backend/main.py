@@ -19,6 +19,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+@st.fragment(run_every=0.25)
+def render_live_metrics():
+    total_reps = st.session_state.get("reps")
+    current_set_reps = st.session_state.get("current_set_reps")
+    reps_per_set = st.session_state.get("reps_per_set")
+    sets_completed = st.session_state.get("sets_completed")
+    target_sets = st.session_state.get("target_sets")
+
+    st.metric("Total Reps", f"{total_reps}")
+    st.metric("Current Set Reps", f"{current_set_reps} / {reps_per_set}")
+    st.metric("Sets Completed", f"{sets_completed} / {target_sets}")
+
+
   
 def main():
     st.set_page_config(
@@ -121,20 +134,28 @@ def main():
                 st.rerun()
 
         if workout_started:
+            # st.divider()
+
+            # exercise = st.session_state.get("exercise_type")
+            # total_reps = st.session_state.get("reps")
+            # current_set_reps = st.session_state.get("current_set_reps")
+            # reps_per_set = st.session_state.get("reps_per_set")
+            # sets_completed = st.session_state.get("sets_completed")
+            # target_sets = st.session_state.get("target_sets")
+
+            # st.subheader("Progress")
+
+            # st.metric("Total Reps", f"{total_reps}")
+            # st.metric("Current Set Reps", f"{current_set_reps} / {reps_per_set}")
+            # st.metric("Sets Completed", f"{sets_completed} / {target_sets}")
+
             st.divider()
 
             exercise = st.session_state.get("exercise_type")
-            total_reps = st.session_state.get("reps")
-            current_set_reps = st.session_state.get("current_set_reps")
-            reps_per_set = st.session_state.get("reps_per_set")
-            sets_completed = st.session_state.get("sets_completed")
-            target_sets = st.session_state.get("target_sets")
 
             st.subheader("Progress")
 
-            st.metric("Total Reps", f"{total_reps}")
-            st.metric("Current Set Reps", f"{current_set_reps} / {reps_per_set}")
-            st.metric("Sets Completed", f"{sets_completed} / {target_sets}")
+            render_live_metrics()
 
             st.divider()
 
@@ -214,9 +235,9 @@ def main():
 
         sync_metrics_update(context)
 
-        if context.state.playing:
-            time.sleep(0.25)
-            st.rerun()
+        # if context.state.playing:
+        #     time.sleep(0.25)
+        #     st.rerun()
 
         inject_webrtc_styles()
 
